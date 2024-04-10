@@ -2,6 +2,9 @@ package com.example.checkin.dto.event;
 
 import com.example.checkin.domain.event.Event;
 
+import lombok.Getter;
+
+@Getter
 public class EventResponseDTO { 
     EventDetailDTO event;
 
