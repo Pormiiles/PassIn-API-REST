@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.checkin.domain.attendee.Attendee;
 import com.example.checkin.domain.event.Event;
+import com.example.checkin.domain.event.exceptions.EventNotFoundException;
 import com.example.checkin.dto.event.EventIdDTO;
 import com.example.checkin.dto.event.EventRequestDTO;
 import com.example.checkin.dto.event.EventResponseDTO;
@@ -24,7 +25,7 @@ public class EventService {
     private final AttendeeRepository attendeeRepository;
 
     public EventResponseDTO getEventDetails(String eventId) { // método de buscar o evento a partir do seu ID
-        Event event = this.eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found with Id: " + eventId)); // retorna um optional (pode ou n existir). Para tratar, basta usar o método OrElseThrow
+        Event event = this.eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found with Id: " + eventId)); // retorna um optional (pode ou n existir). Para tratar, basta usar o método OrElseThrow
         List<Attendee> attendeeList = this.attendeeRepository.findByEventId(eventId);
         
         return new EventResponseDTO(event, attendeeList.size());
