@@ -8,7 +8,7 @@ import com.example.checkin.domain.event.exceptions.EventNotFoundException;
 
 @ControllerAdvice
 public class ExceptionEntityHandler {
-    @ExceptionHandler
+    @ExceptionHandler(EventNotFoundException.class)
     public ResponseEntity handleEventNotFound(EventNotFoundException exception) {
         return ResponseEntity.notFound().build();
     }
