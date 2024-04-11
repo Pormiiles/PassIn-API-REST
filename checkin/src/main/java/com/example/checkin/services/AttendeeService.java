@@ -13,10 +13,13 @@ import com.example.checkin.dto.attendee.AttendeeListResponseDTO;
 import com.example.checkin.repositories.AttendeeRepository;
 import com.example.checkin.repositories.CheckInRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AttendeeService {
-    private AttendeeRepository attendeeRepository;
-    private CheckInRepository checkInRepository;
+    private final AttendeeRepository attendeeRepository;
+    private final CheckInRepository checkInRepository;
 
     public List<Attendee> getAllAttendeesFromEvent(String eventId) {
         return this.attendeeRepository.findByEventId(eventId);
@@ -34,5 +37,3 @@ public class AttendeeService {
         return new AttendeeListResponseDTO(attendeeDetailsList);
     }
 }
-
-
