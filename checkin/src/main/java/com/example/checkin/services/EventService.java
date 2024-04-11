@@ -3,7 +3,6 @@ package com.example.checkin.services;
 import java.text.Normalizer;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.checkin.domain.attendee.Attendee;
@@ -12,7 +11,6 @@ import com.example.checkin.domain.event.exceptions.EventNotFoundException;
 import com.example.checkin.dto.event.EventIdDTO;
 import com.example.checkin.dto.event.EventRequestDTO;
 import com.example.checkin.dto.event.EventResponseDTO;
-import com.example.checkin.repositories.AttendeeRepository;
 import com.example.checkin.repositories.EventRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,11 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class EventService {
     private final EventRepository eventRepository; // Instância que acessa o repositório de eventos
 
-    private final AttendeeRepository attendeeRepository;
+    private final AttendeeService attendeeService;
 
     public EventResponseDTO getEventDetails(String eventId) { // método de buscar o evento a partir do seu ID
         Event event = this.eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found with Id: " + eventId)); // retorna um optional (pode ou n existir). Para tratar, basta usar o método OrElseThrow
-        List<Attendee> attendeeList = this.attendeeRepository.findByEventId(eventId);
+        List<Attendee> attendeeList = this.attendeeService.getAllAttendeesFromEvent(eventId);
         
         return new EventResponseDTO(event, attendeeList.size());
     }
