@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.example.checkin.domain.attendee.Attendee;
+import com.example.checkin.domain.attendee.exceptions.AttendeeAlreadyExistsException;
 import com.example.checkin.domain.checkin.CheckIn;
 import com.example.checkin.dto.attendee.AttendeeDetail;
 import com.example.checkin.dto.attendee.AttendeeListResponseDTO;
@@ -35,5 +36,17 @@ public class AttendeeService {
         }).toList();
 
         return new AttendeeListResponseDTO(attendeeDetailsList);
+    }
+
+    public Attendee registerAttendee(Attendee newAttendee) {
+        this.attendeeRepository.save(newAttendee);
+
+        return newAttendee;
+    }
+
+    public void verifyAttendeeSubscription(String email, String eventId){
+        Optional<Attendee> isAttendeeRegistered = this.attendeeRepository.findByEventIdAndEmail(eventId, email);
+
+        if(isAttendeeRegistered.isPresent()) throw new AttendeeAlreadyExistsException("Attendee is already registered!");
     }
 }
