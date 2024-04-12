@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.checkin.domain.attendee.Attendee;
 import com.example.checkin.domain.event.Event;
+import com.example.checkin.domain.event.exceptions.EventFullException;
 import com.example.checkin.domain.event.exceptions.EventNotFoundException;
 import com.example.checkin.dto.event.EventIdDTO;
 import com.example.checkin.dto.event.EventRequestDTO;
@@ -52,6 +53,6 @@ public class EventService {
         Event event = this.eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found with Id: " + eventId)); 
         List<Attendee> attendeeList = this.attendeeService.getAllAttendeesFromEvent(eventId);
 
-        if(event.getMaximumAttendees() <= attendeeList.size()) throw new RuntimeException("The event is full!");
+        if(event.getMaximumAttendees() <= attendeeList.size()) throw new EventFullException("The event is full!");
     }
 }
