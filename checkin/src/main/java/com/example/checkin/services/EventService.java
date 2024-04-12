@@ -1,6 +1,7 @@
 package com.example.checkin.services;
 
 import java.text.Normalizer;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import com.example.checkin.domain.attendee.Attendee;
 import com.example.checkin.domain.event.Event;
 import com.example.checkin.domain.event.exceptions.EventFullException;
 import com.example.checkin.domain.event.exceptions.EventNotFoundException;
+import com.example.checkin.dto.attendee.AttendeRequestDTO;
+import com.example.checkin.dto.attendee.AttendeeIdDTO;
 import com.example.checkin.dto.event.EventIdDTO;
 import com.example.checkin.dto.event.EventRequestDTO;
 import com.example.checkin.dto.event.EventResponseDTO;
@@ -47,12 +50,26 @@ public class EventService {
         return normalized.replaceAll("[\\p{InCOMBINING_DIACRITICAL_MARKS}]", "").replaceAll("[^\\w\\s]", "").replaceAll("\\s+", "-").toLowerCase();
     }
 
-    public void registerAttendeeOnEvent(String eventId) {
-        this.attendeeService.verifyAttendeeSubscription("", eventId);
+    public AttendeeIdDTO registerAttendeeOnEvent(String eventId, AttendeRequestDTO attendeRequestDTO) {
+        this.attendeeService.verifyAttendeeSubscription(attendeRequestDTO.email(), eventId);
 
-        Event event = this.eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found with Id: " + eventId)); 
+        Event event = this.getEventById(eventId);
         List<Attendee> attendeeList = this.attendeeService.getAllAttendeesFromEvent(eventId);
 
         if(event.getMaximumAttendees() <= attendeeList.size()) throw new EventFullException("The event is full!");
+
+        Attendee newAttendee = new Attendee();
+        newAttendee.setName(attendeRequestDTO.name());
+        newAttendee.setEmail(attendeRequestDTO.email());
+        newAttendee.setEvent(event);
+        newAttendee.setCreateAt(LocalDateTime.now());
+
+        this.attendeeService.registerAttendee(newAttendee);
+
+        return new AttendeeIdDTO(newAttendee.getId());
+    }
+
+    private Event getEventById(String eventId) {
+        return this.eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found with Id: " + eventId));
     }
 }
